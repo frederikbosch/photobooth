@@ -5,6 +5,8 @@ final class PhotoCreator
 
     public function merge (string $outputDirectory, string $canvasFile, array $images)
     {
+        $config = require __DIR__ .'/../../assets/config.php';
+
         if (count($images) !== 4) {
             throw new \InvalidArgumentException('Incorrect number of pictures');
         }
@@ -12,37 +14,47 @@ final class PhotoCreator
         /* Set width and height in proportion of genuine PHP logo */
         $width = 1181;
         $height = 1772;
-        $boundaryX = 100;
-        $boundaryY = 200;
-        $boundaryMiddle = 100;
-        $photoWidth = ($width - $boundaryX * 2) / 2 - $boundaryMiddle;
-        $photoHeight = ($height - $boundaryY * 2) / 2 - $boundaryMiddle;
-
-        $xy = [
-            [$boundaryX, $boundaryY],
-            [$boundaryX + $photoWidth + $boundaryMiddle, $boundaryY],
-            [$boundaryX, $boundaryY + $photoHeight + $boundaryMiddle],
-            [$boundaryX + $photoWidth + $boundaryMiddle, $boundaryY + $photoHeight + $boundaryMiddle]
-        ];
+        $photoWidth = ($width - 1) / 2;
 
         /* Create an Imagick object with transparent canvas */
         $image = new Imagick();
-        $image->newImage($width, $height, new ImagickPixel('transparent'));
+        $image->newImage($width, $height, new ImagickPixel($config['background']));
 
         foreach ($images as $key => $photoUrl) {
             $photo = new \Imagick();
-            //$photo->readImageBlob(file_get_contents($photoUrl));
-            $photo->readImageBlob(
-                file_get_contents(__DIR__ . '/../../test/picture.jpg')
-            );
+            $photo->readImageBlob(file_get_contents($photoUrl));
+            // $photo->readImageBlob(
+            //     file_get_contents(__DIR__ . '/../../test/picture.jpg')
+            // );
+
+            $this->orientate($photo);
+
             $photo->resizeImage(
                 $photoWidth,
-                $photoHeight,
+                null,
                 \Imagick::FILTER_CATROM,
                 1
             );
 
-            list($x, $y) = $xy[$key];
+            switch ($key) {
+                case 0:
+                    $x = 0;
+                    $y = 0;
+                    break;
+                case 1:
+                    $x = $photoWidth + 1;
+                    $y = 0;
+                    break;
+                case 2:
+                    $x = 0;
+                    $y = $height - $photo->getImageHeight();
+                    break;
+                case 3:
+                    $x = $photoWidth + 1;
+                    $y = $height - $photo->getImageHeight();
+                    break;
+            }
+
             $image->compositeImage(
                 $photo,
                 Imagick::COMPOSITE_ADD,
@@ -51,14 +63,35 @@ final class PhotoCreator
             );
         }
 
-        $canvas = new \Imagick($canvasFile);
+        $draw = new \ImagickDraw();
+        $draw->setFillColor($config['font']['color']);
+        $draw->setFont($config['font']['family']);
+        $draw->setFontSize($config['font']['size']);
+        $draw->setFontWeight($config['font']['weight']);
 
-        $image->compositeImage(
-            $canvas,
-            Imagick::COMPOSITE_ADD,
+        $text = $config['text'];
+        $metrics = $image->queryFontMetrics($draw, $text);
+
+        $image->annotateImage(
+            $draw,
+            $width / 2 - $metrics['textWidth'] / 2,
+            $height / 2,
             0,
-            0
+            $text
         );
+
+        $image->setImageUnits(\Imagick::RESOLUTION_PIXELSPERINCH);
+        $image->setImageResolution(300, 300);
+
+
+        // $canvas = new \Imagick($canvasFile);
+
+        // $image->compositeImage(
+            // $canvas,
+            // Imagick::COMPOSITE_ADD,
+            // 0,
+            // 0
+        // );
 
         $image->setFormat('JPG');
 
@@ -66,6 +99,12 @@ final class PhotoCreator
         $image->writeImage($fileName);
 
         return realpath($fileName);
+    }
+
+    private function orientate(\Imagick $photo)
+    {
+        $orientation = $photo->getImageProperty('exif:Orientation');
+        $photo->rotateImage(new \ImagickPixel('#00000000'), (90 * -1));
     }
 
 }

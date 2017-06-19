@@ -1,7 +1,22 @@
 const totalNumberOfPictures = 1;
 let busy = false;
 let remoteTakePhoto = () => fetch('http://10.5.5.9/bacpac/SH?t=17171410&p=%01');
-let remoteGetPhoto = () => fetch('http://10.5.5.9/bacpac/SH?t=17171410&p=%01');
+let remoteGetPhoto = () => {
+  return new Promise((resolve) => {
+    fetch('http://10.5.5.9:8080/videos/DCIM/100GOPRO/').then(
+        async (response) => {
+          let html = await response.text();
+          
+          let parser = new DOMParser();
+          let dom = parser.parseFromString(html, "text/html");
+
+          let link = dom.getElementsByTagName('a');
+          let lastLink = link[link.length - 1];
+          resolve('http://10.5.5.9:8080/videos/DCIM/100GOPRO/' + lastLink.getAttribute('href'));
+        }
+    );
+  });
+};
 
 let urlParams = new URLSearchParams(window.location.search);
 if (urlParams.has('debug')) {
@@ -72,10 +87,19 @@ function placePhotoOnScreen (photoNumber, src) {
   });
 }
 
+function resetTakenPhotos () {
+  let images = document.getElementById('results').getElementsByTagName('img');
+  while (images.length > 0) {
+    images[0].parentNode.removeChild(images[0]);
+  }
+}
+
 async function start() {
   if (busy) {
     return;
   }
+
+  resetTakenPhotos();  
 
   busy = true;
   let src = [];

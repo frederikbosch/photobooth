@@ -25,7 +25,7 @@ final class PrinterController {
             ]
         );
 
-        $this->shellAccess->send('lpr -o document-format=image/jpeg ' . $fileName);
+        $this->shellAccess->send('lpr -o ppi=300 -o document-format=image/jpeg ' . $fileName);
         return new Response($fileName);
     }
 
