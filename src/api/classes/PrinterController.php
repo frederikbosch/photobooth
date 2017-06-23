@@ -25,7 +25,14 @@ final class PrinterController {
             ]
         );
 
-        $this->shellAccess->send('lpr -o ppi=300 -o document-format=image/jpeg ' . $fileName);
+        $this->shellAccess->send(
+            sprintf(
+                'rundll32 C:\WINDOWS\system32\shimgvw.dll,ImageView_PrintTo %s "%s"',
+                $fileName,
+                'HiTi'
+            )
+        );
+
         return new Response($fileName);
     }
 

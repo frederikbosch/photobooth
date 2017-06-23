@@ -5,7 +5,7 @@ final class PhotoCreator
 
     public function merge (string $outputDirectory, string $canvasFile, array $images)
     {
-        $config = require __DIR__ .'/../../assets/config.php';
+        $config = require __DIR__ .'/../../../assets/config.php';
 
         if (count($images) !== 4) {
             throw new \InvalidArgumentException('Incorrect number of pictures');

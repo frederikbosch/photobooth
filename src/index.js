@@ -105,35 +105,35 @@ async function start() {
   let src = [];
   let commentContainer = document.getElementById('comment');
   commentContainer.textContent = "Get ready....";
-  await wait(2000);
+  await wait(500);
   commentContainer.textContent = "Here we go!";
-  await wait(1000);
+  await wait(500);
   commentContainer.textContent = "";
   await takePhoto();
-  await wait(2000);
+  await wait(500);
   src.push(await remoteGetPhoto());
   await placePhotoOnScreen(1, src[src.length - 1]);
   commentContainer.textContent = "One down, three to go!";
-  await wait(3000);
+  await wait(500);
   commentContainer.textContent = "";
   await takePhoto();
-  await wait(2000);
+  await wait(500);
   src.push(await remoteGetPhoto());
   await placePhotoOnScreen(2, src[src.length - 1]);
 
   commentContainer.textContent = "And one more!";
-  await wait(3000);
+  await wait(500);
   commentContainer.textContent = "";
   await takePhoto();
-  await wait(2000);
+  await wait(500);
   src.push(await remoteGetPhoto());
   await placePhotoOnScreen(3, src[src.length - 1]);
 
   commentContainer.textContent = "Final one!";
-  await wait(3000);
+  await wait(500);
   commentContainer.textContent = "";
   await takePhoto();
-  await wait(2000);
+  await wait(500);
   src.push(await remoteGetPhoto());
   await placePhotoOnScreen(4, src[src.length - 1]);
 
