@@ -11,22 +11,16 @@ final class PhotoCreator
             throw new \InvalidArgumentException('Incorrect number of pictures');
         }
 
-        /* Set width and height in proportion of genuine PHP logo */
         $width = 1181;
         $height = 1772;
         $photoWidth = ($width - 1) / 2;
 
-        /* Create an Imagick object with transparent canvas */
         $image = new Imagick();
         $image->newImage($width, $height, new ImagickPixel($config['background']));
 
         foreach ($images as $key => $photoUrl) {
             $photo = new \Imagick();
             $photo->readImageBlob(file_get_contents($photoUrl));
-            // $photo->readImageBlob(
-            //     file_get_contents(__DIR__ . '/../../test/picture.jpg')
-            // );
-
             $this->orientate($photo);
 
             $photo->resizeImage(
@@ -63,35 +57,17 @@ final class PhotoCreator
             );
         }
 
-        $draw = new \ImagickDraw();
-        $draw->setFillColor($config['font']['color']);
-        $draw->setFont($config['font']['family']);
-        $draw->setFontSize($config['font']['size']);
-        $draw->setFontWeight($config['font']['weight']);
-
-        $text = $config['text'];
-        $metrics = $image->queryFontMetrics($draw, $text);
-
-        $image->annotateImage(
-            $draw,
-            $width / 2 - $metrics['textWidth'] / 2,
-            $height / 2,
-            0,
-            $text
-        );
-
         $image->setImageUnits(\Imagick::RESOLUTION_PIXELSPERINCH);
         $image->setImageResolution(300, 300);
 
+        $canvas = new \Imagick($config['overlay']);
 
-        // $canvas = new \Imagick($canvasFile);
-
-        // $image->compositeImage(
-            // $canvas,
-            // Imagick::COMPOSITE_ADD,
-            // 0,
-            // 0
-        // );
+        $image->compositeImage(
+            $canvas,
+            Imagick::COMPOSITE_ADD,
+            0,
+            0
+        );
 
         $image->setFormat('JPG');
 
