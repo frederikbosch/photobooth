@@ -1,28 +1,17 @@
 const totalNumberOfPictures = 1;
 let busy = false;
-let remoteTakePhoto = () => fetch('http://10.5.5.9/bacpac/SH?t=17171410&p=%01');
+
+let remoteTakePhoto = () => fetch("/api/take/", { method: "POST"});
 let remoteGetPhoto = () => {
   return new Promise((resolve) => {
-    fetch('http://10.5.5.9:8080/videos/DCIM/100GOPRO/').then(
-        async (response) => {
-          let html = await response.text();
-          
-          let parser = new DOMParser();
-          let dom = parser.parseFromString(html, "text/html");
-
-          let link = dom.getElementsByTagName('a');
-          let lastLink = link[link.length - 1];
-          resolve('http://10.5.5.9:8080/videos/DCIM/100GOPRO/' + lastLink.getAttribute('href'));
-        }
+    fetch("/api/fetch/", { method: "POST"}).then(
+      async (response) => {
+        let json = await response.json();
+        resolve(json['fileName']);
+      }
     );
   });
 };
-
-let urlParams = new URLSearchParams(window.location.search);
-if (urlParams.has('debug')) {
-  remoteTakePhoto = () => Promise.resolve();
-  remoteGetPhoto = () => Promise.resolve('test/picture.jpg');
-}
 
 function wait(ms) {
   return new Promise(r => setTimeout(r, ms));
@@ -42,19 +31,13 @@ async function showRandomFunnyPicture (ms) {
 }
 
 async function print(files) {
-  var data = new FormData();
+  let data = new FormData();
   data.append('photo1', files[0]);
   data.append('photo2', files[1]);
   data.append('photo3', files[2]);
   data.append('photo4', files[3]);
 
-  return fetch(
-    "/api/print/",
-    {
-        method: "POST",
-        body: data
-    }
-  );
+  return fetch("/api/print/", { method: "POST", body: data});
 }
 
 function takePhoto() {
@@ -79,16 +62,16 @@ function takePhoto() {
 function placePhotoOnScreen (photoNumber, src) {
   let photoContainer = document.getElementById('photo' + photoNumber);
 
-  return new Promise(async function (resolve, reject) {
+  return new Promise(async function (resolve) {
     let photo = document.createElement('img');
-    photo.src = src;
+    photo.src = '/api/photo/?photo=' + src;
     photoContainer.appendChild(photo);
-    resolve();
+    photo.addEventListener('load', () => resolve());
   });
 }
 
 function resetTakenPhotos () {
-  let images = document.getElementById('results').getElementsByTagName('img');
+  let images = document.querySelectorAll('.results img');
   while (images.length > 0) {
     images[0].parentNode.removeChild(images[0]);
   }
@@ -142,7 +125,7 @@ async function start() {
   busy = false;
 }
 
-document.addEventListener("DOMContentLoaded", function (event) {
+document.addEventListener("DOMContentLoaded", function () {
   document.addEventListener('keyup', function (e) {
     if (e.keyCode === 32) {
       start();

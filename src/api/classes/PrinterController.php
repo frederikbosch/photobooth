@@ -1,22 +1,46 @@
 <?php
 
-final class PrinterController {
+/**
+ * Class PrinterController
+ */
+final class PrinterController
+{
 
+    /**
+     * @var ShellAccess
+     */
     private $shellAccess;
 
+    /**
+     * @var MergedPhotoCreator
+     */
     private $photoCreator;
-    
-    public function __construct(ShellAccess $shellAccess, PhotoCreator $photoCreator)
+    /**
+     * @var bool
+     */
+    private $debug = false;
+
+    /**
+     * PrinterController constructor.
+     * @param ShellAccess $shellAccess
+     * @param MergedPhotoCreator $photoCreator
+     * @param bool $debug
+     */
+    public function __construct(ShellAccess $shellAccess, MergedPhotoCreator $photoCreator, $debug)
     {
         $this->shellAccess = $shellAccess;
         $this->photoCreator = $photoCreator;
+        $this->debug = $debug;
     }
 
+    /**
+     * @param Request $request
+     * @return PrinterResponse
+     */
     public function print(Request $request)
     {
         $fileName = $this->photoCreator->merge(
             __DIR__ . '/../../../data',
-            __DIR__ . '/../../../assets/canvas.png',
             [
                 $request->get('photo1'),
                 $request->get('photo2'),
@@ -25,15 +49,17 @@ final class PrinterController {
             ]
         );
 
-        $this->shellAccess->send(
-            sprintf(
-                'rundll32 C:\WINDOWS\system32\shimgvw.dll,ImageView_PrintTo %s "%s"',
-                $fileName,
-                'HiTi'
-            )
-        );
+        if ($this->debug === false) {
+            $this->shellAccess->send(
+                sprintf(
+                    'rundll32 C:\WINDOWS\system32\shimgvw.dll,ImageView_PrintTo %s "%s"',
+                    $fileName,
+                    'HiTi'
+                )
+            );
+        }
 
-        return new Response($fileName);
+        return new PrinterResponse($fileName);
     }
 
 }

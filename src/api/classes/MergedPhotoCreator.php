@@ -1,9 +1,9 @@
 <?php
 
-final class PhotoCreator
+final class MergedPhotoCreator
 {
 
-    public function merge (string $outputDirectory, string $canvasFile, array $images)
+    public function merge (string $outputDirectory, array $images)
     {
         $config = require __DIR__ .'/../../../assets/config.php';
 
@@ -11,24 +11,16 @@ final class PhotoCreator
             throw new \InvalidArgumentException('Incorrect number of pictures');
         }
 
-        $width = 1181;
-        $height = 1772;
-        $photoWidth = ($width - 1) / 2;
-
         $image = new Imagick();
-        $image->newImage($width, $height, new ImagickPixel($config['background']));
+        $image->newImage(
+            PhotoConstant::WIDTH,
+            PhotoConstant::HEIGHT,
+            new ImagickPixel($config['background'])
+        );
 
         foreach ($images as $key => $photoUrl) {
             $photo = new \Imagick();
-            $photo->readImageBlob(file_get_contents($photoUrl));
-            $this->orientate($photo);
-
-            $photo->resizeImage(
-                $photoWidth,
-                null,
-                \Imagick::FILTER_CATROM,
-                1
-            );
+            $photo->readImageBlob(file_get_contents($outputDirectory  . '/' . $photoUrl));
 
             switch ($key) {
                 case 0:
@@ -36,17 +28,19 @@ final class PhotoCreator
                     $y = 0;
                     break;
                 case 1:
-                    $x = $photoWidth + 1;
+                    $x = PhotoConstant::PHOTO_WIDTH + 1;
                     $y = 0;
                     break;
                 case 2:
                     $x = 0;
-                    $y = $height - $photo->getImageHeight();
+                    $y = PhotoConstant::HEIGHT - $photo->getImageHeight();
                     break;
                 case 3:
-                    $x = $photoWidth + 1;
-                    $y = $height - $photo->getImageHeight();
+                    $x = PhotoConstant::PHOTO_WIDTH + 1;
+                    $y = PhotoConstant::HEIGHT - $photo->getImageHeight();
                     break;
+                default:
+                    throw new \RuntimeException('Cannot determine x/y of non existing image');
             }
 
             $image->compositeImage(
@@ -77,10 +71,6 @@ final class PhotoCreator
         return realpath($fileName);
     }
 
-    private function orientate(\Imagick $photo)
-    {
-        $orientation = $photo->getImageProperty('exif:Orientation');
-        $photo->rotateImage(new \ImagickPixel('#00000000'), (90 * -1));
-    }
+
 
 }

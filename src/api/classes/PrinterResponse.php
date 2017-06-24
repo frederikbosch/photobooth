@@ -1,6 +1,6 @@
 <?php
 
-final class Response implements \JsonSerializable
+final class PrinterResponse
 {
     private $fileName;
 
@@ -8,9 +8,10 @@ final class Response implements \JsonSerializable
         $this->fileName = $fileName;
     }
 
-    public function jsonSerialize() {
-        return [
+    public function output() {
+        header('Content-Type: application/json');
+        echo json_encode([
             'fileName' => $this->fileName
-        ];
+        ]);
     }
 }
