@@ -1,6 +1,7 @@
 const totalNumberOfPictures = 1;
 let busy = false;
 
+let fetchPhoto = [];
 let remoteTakePhoto = () => fetch("/api/take/", { method: "POST"});
 let remoteGetPhoto = () => {
   return new Promise((resolve) => {
@@ -66,7 +67,13 @@ function placePhotoOnScreen (photoNumber, src) {
     let photo = document.createElement('img');
     photo.src = '/api/photo/?photo=' + src;
     photoContainer.appendChild(photo);
-    photo.addEventListener('load', () => resolve());
+    resolve();
+
+    fetchPhoto.push(
+      new Promise((loaded) => {
+        photo.addEventListener('load', () => loaded());
+      })
+    );
   });
 }
 
@@ -121,6 +128,7 @@ async function start() {
   await placePhotoOnScreen(4, src[src.length - 1]);
 
   commentContainer.textContent = "Photos are being printed!";
+  await Promise.all(fetchPhoto);
   await print(src);
   busy = false;
 }

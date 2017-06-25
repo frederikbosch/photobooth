@@ -6,6 +6,7 @@ spl_autoload_register(function ($class) {
 });
 
 $debug = substr($_SERVER['SERVER_ADDR'], 0, 7) !== '10.5.5.';
+$debug = false;
 
 $router = [
     'POST' => [

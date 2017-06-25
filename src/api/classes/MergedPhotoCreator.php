@@ -54,15 +54,17 @@ final class MergedPhotoCreator
         $image->setImageUnits(\Imagick::RESOLUTION_PIXELSPERINCH);
         $image->setImageResolution(300, 300);
 
-        $canvas = new \Imagick($config['overlay']);
+        if (isset($config['overlay'])) {
+            $canvas = new \Imagick($config['overlay']);
 
-        $image->compositeImage(
-            $canvas,
-            Imagick::COMPOSITE_ADD,
-            0,
-            0
-        );
-
+            $image->compositeImage(
+                $canvas,
+                Imagick::COMPOSITE_DEFAULT,
+                0,
+                0
+            );
+        }
+        
         $image->setFormat('JPG');
 
         $fileName = $outputDirectory . '/' . (new DateTimeImmutable('now'))->format('Y-m-d-H-i-s') . '.jpg';

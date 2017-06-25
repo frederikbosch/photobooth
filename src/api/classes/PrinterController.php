@@ -39,6 +39,8 @@ final class PrinterController
      */
     public function print(Request $request)
     {
+        $config = require __DIR__ .'/../../../assets/config.php';
+
         $fileName = $this->photoCreator->merge(
             __DIR__ . '/../../../data',
             [
@@ -54,7 +56,7 @@ final class PrinterController
                 sprintf(
                     'rundll32 C:\WINDOWS\system32\shimgvw.dll,ImageView_PrintTo %s "%s"',
                     $fileName,
-                    'HiTi'
+                    $config['printer']
                 )
             );
         }
