@@ -53,9 +53,8 @@ final class PrinterController
 
         if ($this->debug === false) {
             $command = sprintf(
-                '"%s" -c "scp /c/Users/photobooth/photobooth/data/%s %s:~ && ssh %s \'./print.sh %s\'"',
-                'C:\Program Files\Git\git-bash.exe',
-                basename($fileName),
+                "scp %s %s:~ && ssh %s './print.sh %s'",
+                $fileName,
                 $config['printer'],
                 $config['printer'],
                 basename($fileName)
