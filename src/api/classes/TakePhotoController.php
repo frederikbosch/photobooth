@@ -22,6 +22,7 @@ final class TakePhotoController
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, 'http://10.5.5.9/bacpac/SH?t=17171410&p=%01');
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_INTERFACE, '10.5.5.109');
             $output = curl_exec($ch);
         }
 

@@ -52,13 +52,16 @@ final class PrinterController
         );
 
         if ($this->debug === false) {
-            $this->shellAccess->send(
-                sprintf(
-                    'rundll32 C:\WINDOWS\system32\shimgvw.dll,ImageView_PrintTo %s "%s"',
-                    $fileName,
-                    $config['printer']
-                )
+            $command = sprintf(
+                '"%s" -c "scp /c/Users/photobooth/photobooth/data/%s %s:~ && ssh %s \'./print.sh %s\'"',
+                'C:\Program Files\Git\git-bash.exe',
+                basename($fileName),
+                $config['printer'],
+                $config['printer'],
+                basename($fileName)
             );
+
+            $this->shellAccess->send($command);
         }
 
         return new PrinterResponse($fileName);

@@ -24,7 +24,11 @@ final class PhotoController {
         $outputDirectory = __DIR__ . '/../../../data';
 
         if ($this->debug === false) {
-            $jpeg = file_get_contents('http://10.5.5.9:8080/videos/DCIM/100GOPRO/' . $fileName);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'http://10.5.5.9:8080/videos/DCIM/100GOPRO/' . $fileName);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_INTERFACE, '10.5.5.109');
+            $jpeg = curl_exec($ch);
 
             $photo = new \Imagick();
             $photo->readImageBlob($jpeg);

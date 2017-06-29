@@ -25,7 +25,11 @@ final class FetchController
     public function fetch(): FetchResponse
     {
         if ($this->debug === false) {
-            $photoList = file_get_contents('http://10.5.5.9:8080/videos/DCIM/100GOPRO/');
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'http://10.5.5.9:8080/videos/DCIM/100GOPRO/');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_INTERFACE, '10.5.5.109');
+            $photoList = curl_exec($ch);
 
             $dom = new \DOMDocument();
             $dom->loadHTML($photoList);
