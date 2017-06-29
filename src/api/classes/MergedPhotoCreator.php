@@ -45,7 +45,7 @@ final class MergedPhotoCreator
 
             $image->compositeImage(
                 $photo,
-                Imagick::COMPOSITE_ADD,
+                Imagick::COMPOSITE_DEFAULT,
                 $x,
                 $y
             );
