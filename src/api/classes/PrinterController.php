@@ -53,7 +53,7 @@ final class PrinterController
 
         if ($this->debug === false) {
             $command = sprintf(
-                "scp %s %s:~ && ssh %s './print.sh %s'",
+                "/usr/bin/scp %s %s:~ && /usr/bin/ssh %s './print.sh %s'",
                 $fileName,
                 $config['printer'],
                 $config['printer'],

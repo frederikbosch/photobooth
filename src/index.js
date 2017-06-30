@@ -79,8 +79,8 @@ function placePhotoOnScreen (photoNumber, src) {
 
 function resetTakenPhotos () {
   let images = document.querySelectorAll('.results img');
-  while (images.length > 0) {
-    images[0].parentNode.removeChild(images[0]);
+  for(let i = 0, j = images.length; i < j; i++) {
+    images[i].parentNode.removeChild(images[i]);
   }
 }
 
