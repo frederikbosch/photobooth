@@ -10,5 +10,6 @@ cp /media/dc7aa23f-297e-43c3-a1f4-64765c52c43c/home/ssh.initd /etc/init.d/ssh
 cp /media/dc7aa23f-297e-43c3-a1f4-64765c52c43c/home/print.sh /root/print.sh
 mkdir /root/.ssh
 cat /media/dc7aa23f-297e-43c3-a1f4-64765c52c43c/home/laptop.key >> /root/.ssh/authorized_keys
-wget https://raw.githubusercontent.com/frederikbosch/photobooth/master/src/print.sh -O /root/print.sh
+wget https://raw.githubusercontent.com/frederikbosch/photobooth/master/src/print.sh -O /media/dc7aa23f-297e-43c3-a1f4-64765c52c43c/home/print.sh
+cp /media/dc7aa23f-297e-43c3-a1f4-64765c52c43c/home/print.sh /root/print.sh
 chmod +x /root/print.sh
